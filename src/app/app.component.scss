@@ -1,0 +1,101 @@
+.app-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.site-header {
+  background: var(--color-surface);
+  border-bottom: 2px solid var(--color-accent);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  .header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1.2rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .logo-mark {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+  }
+
+  .logo-icon {
+    font-size: 1.4rem;
+    color: var(--color-accent);
+    animation: spin-slow 8s linear infinite;
+  }
+
+  .logo-text {
+    font-family: var(--font-display);
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+  }
+
+  .logo-sub {
+    font-family: var(--font-body);
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+  }
+
+  .header-tagline {
+    font-family: var(--font-body);
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    font-style: italic;
+  }
+
+  .header-bar {
+    height: 3px;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-accent2), var(--color-accent3));
+  }
+}
+
+.main-content {
+  flex: 1;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.site-footer {
+  text-align: center;
+  padding: 1.5rem;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  border-top: 1px solid var(--color-border);
+
+  a {
+    color: var(--color-accent);
+    text-decoration: none;
+    &:hover { text-decoration: underline; }
+  }
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (max-width: 640px) {
+  .site-header .header-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem;
+  }
+  .header-tagline { display: none; }
+  .main-content { padding: 1rem; }
+}

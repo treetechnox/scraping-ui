@@ -1,0 +1,27 @@
+<div class="combinations">
+  @for (combo of combinations; track combo.number; let i = $index) {
+    <div class="combination" [class.is-expanded]="isExpanded(i)">
+
+      <button class="combo-header" (click)="toggle(i)" [attr.aria-expanded]="isExpanded(i)">
+        <div class="combo-header-left">
+          <span class="combo-number">{{ combo.number | number: '2.0' }}</span>
+          <div class="combo-title-block">
+            <span class="combo-label">Combinaison {{ combo.number }}</span>
+            <span class="combo-preview">{{ combo.tasks[0]?.content | slice:0:90 }}…</span>
+          </div>
+        </div>
+        <div class="combo-header-right">
+          <span class="task-count">{{ combo.tasks.length }} tâches</span>
+          <span class="chevron" [class.chevron--open]="isExpanded(i)">›</span>
+        </div>
+      </button>
+
+      @if (isExpanded(i)) {
+        <div class="combo-body">
+          <app-task-panel [tasks]="combo.tasks" [comboNumber]="combo.number" />
+        </div>
+      }
+
+    </div>
+  }
+</div>

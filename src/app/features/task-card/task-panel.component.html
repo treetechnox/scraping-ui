@@ -1,0 +1,132 @@
+<div class="panel" [attr.data-combo]="comboNumber">
+
+  <!-- ═══ TAB BAR + TIMER ══════════════════════════════════════════════ -->
+  <div class="panel-topbar">
+
+    <!-- Tabs -->
+    <div class="tabs" role="tablist">
+      @for (task of tasks; track task.number; let i = $index) {
+        <button
+          class="tab"
+          role="tab"
+          [class.tab--active]="activeTab() === i"
+          [attr.data-n]="task.number"
+          (click)="selectTab(i)"
+        >
+          <span class="tab-icon">{{ taskIcon(task.number) }}</span>
+          <span class="tab-label">Tâche {{ task.number }}</span>
+          @if (wordCount(i) > 0) {
+            <span class="tab-wc">{{ wordCount(i) }}</span>
+          }
+        </button>
+      }
+    </div>
+
+    <!-- Timer block -->
+    <div class="timer-block" [class.timer--warning]="isWarning()" [class.timer--done]="isDone()">
+
+      <!-- SVG ring -->
+      <svg class="timer-ring" viewBox="0 0 52 52" aria-hidden="true">
+        <circle class="ring-track" cx="26" cy="26" r="20" />
+        <circle
+          class="ring-fill"
+          cx="26" cy="26" r="20"
+          [style.stroke-dasharray]="CIRCUMFERENCE"
+          [style.stroke-dashoffset]="ringOffset()"
+        />
+      </svg>
+
+      <span class="timer-display">{{ timeDisplay() }}</span>
+
+      <!-- Controls -->
+      <div class="timer-controls">
+        @if (timerState() === 'idle') {
+          <button class="ctrl-btn ctrl-btn--start" (click)="startTimer()" title="Démarrer">▶</button>
+        }
+        @if (timerState() === 'running') {
+          <button class="ctrl-btn" (click)="pauseTimer()" title="Pause">⏸</button>
+        }
+        @if (timerState() === 'paused') {
+          <button class="ctrl-btn ctrl-btn--start" (click)="resumeTimer()" title="Reprendre">▶</button>
+        }
+        @if (timerState() !== 'idle') {
+          <button class="ctrl-btn ctrl-btn--reset" (click)="resetTimer()" title="Réinitialiser">↺</button>
+        }
+      </div>
+
+      @if (isDone()) {
+        <span class="timer-done-label">Temps écoulé !</span>
+      }
+    </div>
+
+  </div>
+
+  <!-- ═══ ACTIVE TASK CONTENT ══════════════════════════════════════════ -->
+  @if (activeTask(); as task) {
+    <div class="task-workspace" [attr.data-n]="task.number">
+
+      <!-- Left: subject prompt -->
+      <div class="prompt-col">
+        <div class="prompt-header">
+          <span class="prompt-icon">{{ taskIcon(task.number) }}</span>
+          <div>
+            <span class="prompt-title">Tâche {{ task.number }}</span>
+            <span class="prompt-type">{{ taskType(task.number) }}</span>
+          </div>
+          <button class="copy-btn" (click)="copyTask()" [class.copied]="copied()" title="Copier">
+            {{ copied() ? '✓' : '⎘' }}
+          </button>
+        </div>
+
+        <div class="prompt-body">
+          @for (part of contentParts(task); track part.label) {
+            @if (part.label && part.label !== 'Sujet') {
+              <div class="doc-label">{{ part.label }}</div>
+            }
+            <p class="prompt-text" [class.prompt-text--doc]="part.label !== '' && part.label !== 'Sujet'">
+              {{ part.text }}
+            </p>
+          }
+        </div>
+
+        @if (task.wordLimit) {
+          <div class="word-limit-chip">
+            <span>≡</span> {{ task.wordLimit }}
+          </div>
+        }
+      </div>
+
+      <!-- Right: answer textarea -->
+      <div class="answer-col">
+        <div class="answer-header">
+          <span class="answer-label">Votre réponse</span>
+          <span class="wc-badge" [class.wc-badge--ok]="wordCount(activeTab()) >= 60">
+            {{ wordCount(activeTab()) }} mot{{ wordCount(activeTab()) !== 1 ? 's' : '' }}
+          </span>
+        </div>
+
+        <textarea
+          class="answer-textarea"
+          [class.textarea--done]="isDone()"
+          [placeholder]="timerState() === 'idle'
+            ? 'Commencez à écrire pour démarrer le chronomètre…'
+            : 'Rédigez votre réponse ici…'"
+          [value]="getAnswer(activeTab())"
+          (input)="setAnswer(activeTab(), $any($event.target).value)"
+          [readonly]="isDone()"
+          spellcheck="true"
+          lang="fr"
+        ></textarea>
+
+        @if (isDone()) {
+          <div class="done-overlay">
+            <span class="done-icon">⏱</span>
+            <span class="done-text">Temps écoulé — relecture uniquement</span>
+          </div>
+        }
+      </div>
+
+    </div>
+  }
+
+</div>

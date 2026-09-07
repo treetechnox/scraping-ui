@@ -1,0 +1,84 @@
+<!-- Loading state -->
+@if (loadingMonths()) {
+  <div class="loading-screen">
+    <div class="spinner"></div>
+    <p>Chargement des mois…</p>
+  </div>
+}
+
+<!-- Error state -->
+@if (error() && !loadingMonths() && !loadingResult()) {
+  <div class="error-banner">
+    <span class="error-icon">⚠</span>
+    <span>{{ error() }}</span>
+  </div>
+}
+
+<!-- Main layout -->
+@if (!loadingMonths() && months().length > 0) {
+  <div class="layout">
+
+    <!-- LEFT: Month sidebar -->
+    <aside class="month-sidebar">
+      <h2 class="sidebar-title">
+        <span class="sidebar-title-accent">↓</span> Sélectionner un mois
+      </h2>
+
+      @for (group of monthsByYear(); track group[0]) {
+        <div class="year-group">
+          <div class="year-label">{{ group[0] }}</div>
+          <ul class="month-list">
+            @for (month of group[1]; track month.slug) {
+              <li>
+                <button
+                  class="month-btn"
+                  [class.active]="selectedSlug() === month.slug"
+                  (click)="selectMonth(month.slug)"
+                >
+                  <span class="month-name">{{ month.label }}</span>
+                  @if (selectedSlug() === month.slug) {
+                    <span class="active-dot"></span>
+                  }
+                </button>
+              </li>
+            }
+          </ul>
+        </div>
+      }
+    </aside>
+
+    <!-- RIGHT: Combinations panel -->
+    <section class="content-panel">
+
+      @if (loadingResult()) {
+        <div class="loading-result">
+          <div class="spinner spinner--large"></div>
+          <p class="loading-label">Analyse de la page en cours…</p>
+          <p class="loading-sub">Récupération des combinaisons et tâches</p>
+        </div>
+      }
+
+      @if (!loadingResult() && result()) {
+        <div class="result-header">
+          <h1 class="result-title">{{ result()!.label }}</h1>
+          <div class="result-meta">
+            <span class="badge">{{ result()!.combinations.length }} combinaison{{ result()!.combinations.length > 1 ? 's' : '' }}</span>
+            <a [href]="result()!.url" target="_blank" rel="noopener" class="source-link">
+              Voir la source ↗
+            </a>
+          </div>
+        </div>
+
+        <app-combination-list [combinations]="result()!.combinations" />
+      }
+
+      @if (!loadingResult() && !result() && !error() && selectedSlug()) {
+        <div class="empty-state">
+          <span class="empty-icon">◌</span>
+          <p>Sélectionnez un mois pour charger les sujets.</p>
+        </div>
+      }
+
+    </section>
+  </div>
+}
